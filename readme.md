@@ -14,7 +14,7 @@ Bulma
  3. Configure o ambiente  
  `cp .env.example .env`  
  `php artisan key:generate`  
-    - Popule o banco de dados mysql  
+    - Popule o banco de dados mysql, lembre-se que antes de rodar o comando você deve definir no arquivo de configuração a host e porta local. 
  `php artisan migrate --seed`  
  4. Rode o servidor  
  `php artisan serve`  

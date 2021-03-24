@@ -15,6 +15,7 @@ services:
       - ./:/var/www
     networks:
       - sales
+      - sales-external
 
   db:
     image: mysql:5.7
@@ -27,10 +28,13 @@ services:
       MYSQL_USER: salesuser
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+    ports:
+      - "3306"
     volumes:
       - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
       - sales
+      - sales-external
 
   nginx:
     image: nginx:alpine
@@ -43,7 +47,10 @@ services:
       - ./docker-compose/nginx:/etc/nginx/conf.d
     networks:
       - sales
+      - sales-external
 
 networks:
   sales:
     driver: bridge
+  sales-external:
+    external: true

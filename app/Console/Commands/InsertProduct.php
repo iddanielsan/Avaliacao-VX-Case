@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\ProductService;
+use App\Repositories\ProductRepository;
 
 class InsertProduct extends Command
 {
@@ -26,9 +26,9 @@ class InsertProduct extends Command
      *
      * @return void
      */
-    public function __construct(ProductService $productService)
+    public function __construct(ProductRepository $productRepository)
     {
-        $this->productService = $productService;
+        $this->productRepository = $productRepository;
         
         parent::__construct();
     }
@@ -40,7 +40,7 @@ class InsertProduct extends Command
      */
     public function handle()
     {
-        $this->productService->store([
+        $this->productRepository->store([
             "product" => $this->argument('name'),
             "reference" => $this->argument('reference'),
             "price" => $this->argument('price'),
