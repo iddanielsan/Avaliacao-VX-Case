@@ -1,11 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Product;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Services\ProductService;
+use App\Http\Requests\ProductRequest;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
+    public function __construct(ProductService $productService)
+    {
+        $this->productService = $productService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,12 +21,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        if(isset($request->product_name))
-            $query = strtoupper($request->product_name);
-            return Product::where('name','LIKE','%'.$query.'%')
-                        ->orWhere('reference','LIKE','%'.$query.'%')->get();
-
-        return Product::all();
+        return $this->productService->index($request);
     }
     /**
      * Store a newly created resource in storage.
@@ -26,11 +29,19 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $product = new Product;
-        $product->create($request->all());
-        return Response()->json('Produto cadastrado!', 201);
+        try {
+            $data = $request->all();
+
+            $this->productService->store($data);
+
+            return Response()->json('Produto cadastrado!', 201);
+        } catch (\Throwable $th) {
+            Log::debug($th);
+            return Response()->json('Ocorreu um erro ao cadastrar o produto!', 400);
+        }
+        
     }
 
     /**
@@ -41,7 +52,11 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        return Product::find($id);
+        try {
+            return $this->productService->showById($id);
+        } catch (\Throwable $th) {
+            return Response()->json('Ocorreu um erro ao completar a solicitação.', 400);
+        }
     }
 
 
@@ -52,16 +67,17 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
-        $product = Product::find($id);
-        $product->name = $request->name;
-        $product->reference = $request->reference;
-        $product->price = $request->price;
-        $product->delivery_days = $request->delivery_days;
-        $product->save();
-        return Response()->json('Produto Atualizado!', 200);
+        try {
+            $data = $request->all();
+            
+            $this->productService->updateById($request, $id);
 
+            return Response()->json('Produto Atualizado!', 200);
+        } catch (\Throwable $th) {
+            return Response()->json('Ocorreu um erro ao atualizar o produto', 400);
+        }
     }
 
     /**
@@ -72,9 +88,11 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::find($id);
-        $product->delete();
-        return Response()->json('Produto Excluido!', 200);
-
+        try {
+            $this->productService->destroyById($id);
+            return Response()->json('Produto Excluido!', 200);
+        } catch (\Throwable $th) {
+            return Response()->json('Erro ao excluir o produto!', 400);
+        }
     }
 }
