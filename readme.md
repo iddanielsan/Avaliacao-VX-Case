@@ -15,8 +15,9 @@ Bulma
  `cp .env.example .env`  
  `php artisan key:generate`  
     - Popule o banco de dados mysql, lembre-se que antes de rodar o comando você deve definir no arquivo de configuração a host e porta local. 
- `php artisan migrate --seed`  
- 4. Rode o servidor  
+ `php artisan migrate --seed`
+ 4. Adicione o Webhook URL do Slack no arquivo de configuração  
+ 5. Rode o servidor  
  `php artisan serve`  
 
 
