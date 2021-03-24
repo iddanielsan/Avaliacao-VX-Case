@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Services\ProductService;
 
 class InsertProduct extends Command
 {
@@ -25,8 +26,10 @@ class InsertProduct extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ProductService $productService)
     {
+        $this->productService = $productService;
+        
         parent::__construct();
     }
 
@@ -37,11 +40,11 @@ class InsertProduct extends Command
      */
     public function handle()
     {
-        $product = $this->argument('name');
-        $reference = $this->argument('reference');
-        $price = $this->argument('price');
-        $delivery_days = $this->argument('delivery_days');
-        
-        in
+        $this->productService->store([
+            "product" => $this->argument('name'),
+            "reference" => $this->argument('reference'),
+            "price" => $this->argument('price'),
+            "delivery_days" => $this->argument('delivery_days')
+        ]);
     }
 }
